@@ -46,7 +46,7 @@ pip install customtkinter CTkTable Pillow pyinstaller
 3. Run the main script (e.g., `app.py` or `main.py`, depending on its actual name):
 
 ```bash
-python app.py
+python src/main.py
 ```
 
 4. The graphical interface will open. Use the sidebar to navigate through the different sections (Search, Recommendation, Plagiarism, Trends, Summary).
@@ -56,15 +56,17 @@ python app.py
 Use the following command in Git Bash or any terminal:
 
 ```bash
-pyinstaller --onefile --noconsole --icon=logo.ico \
---add-data "logo.ico;." \
---add-data "article.png;." \
---add-data "bars.png;." \
---add-data "bug.png;." \
---add-data "like.png;." \
---add-data "logo.png;." \
---add-data "search.png;." \
---add-data "chart.png;." NotaInsights.py
+pyinstaller --onefile --noconsole --icon=assets/images/logo.ico \
+--add-data "assets/images/logo.ico;assets/images" \
+--add-data "assets/images/article.png;assets/images" \
+--add-data "assets/images/bars.png;assets/images" \
+--add-data "assets/images/bug.png;assets/images" \
+--add-data "assets/images/like.png;assets/images" \
+--add-data "assets/images/logo.png;assets/images" \
+--add-data "assets/images/search.png;assets/images" \
+--add-data "assets/images/chart.png;assets/images" \
+--name "Nota Insights" \
+src/main.py
 ```
 
 ### Command Details 🔧:
