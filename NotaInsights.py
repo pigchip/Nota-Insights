@@ -1,17 +1,39 @@
+import sys, os
 from customtkinter import *
 from CTkTable import CTkTable
 from PIL import Image
 
+def resource_path(relative_path):
+    """Obtiene la ruta absoluta del recurso, ya sea empaquetado o no."""
+    try:
+        # PyInstaller crea una carpeta temporal para los archivos
+        base_path = sys._MEIPASS
+    except AttributeError:
+        # En modo desarrollo (sin empaquetar), usar el directorio actual
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 set_appearance_mode("light")
 app = CTk()
 
-# Configurar la resolución inicial y la mínima
-app.geometry("856x645")  # Resolución inicial
-app.minsize(856, 645)  # Resolución mínima
-app.resizable(True, True)  # Permitir redimensionar
-app.title("Aplicación de Procesamiento de Lenguaje Natural")
+# Configurar ícono
+icon_path = resource_path("logo.ico")
+try:
+    app.iconbitmap(icon_path)
+except Exception as e:
+    print(f"Error cargando el ícono: {e}")
 
-# Funciones para cambiar el contenido del main_view
+# Configurar la resolución inicial y mínima
+app.geometry("856x645")  # Resolución inicial
+app.minsize(856, 645)    # Resolución mínima
+app.resizable(True, True)
+app.title("Nota Insights")
+
+def clear_main_view():
+    for widget in main_view.winfo_children():
+        widget.destroy()
+
 def show_search_engine():
     clear_main_view()
     # Título
@@ -82,12 +104,11 @@ def show_social_trends():
     clear_main_view()
     CTkLabel(master=main_view, text="Redes Sociales: Tendencias", font=("Arial Black", 25), text_color="#2A8C55").pack(anchor="nw", padx=20, pady=20)
 
-    # Simulación de gráficas (usaremos una imagen estática)
+    # Simulación de gráficas
     chart_frame = CTkFrame(master=main_view, fg_color="#F0F0F0", height=300)
     chart_frame.pack(fill="x", padx=20, pady=20)
-    # Suponiendo que tenemos un gráfico en 'chart.png'
     try:
-        chart_img_data = Image.open("chart.png")
+        chart_img_data = Image.open(resource_path("chart.png"))
         chart_img = CTkImage(dark_image=chart_img_data, light_image=chart_img_data, size=(600,300))
         CTkLabel(master=chart_frame, text="", image=chart_img).pack(pady=10)
     except:
@@ -126,27 +147,22 @@ def show_summarization():
     CTkLabel(master=result_frame, text="Resumen:", font=("Arial Black", 15)).pack(anchor="w", padx=10, pady=(10,0))
     CTkLabel(master=result_frame, text="Aquí se mostraría el resumen del documento seleccionado...", font=("Arial",14), text_color="#333", wraplength=600, justify="left").pack(anchor="w", padx=10, pady=10)
 
-
-def clear_main_view():
-    for widget in main_view.winfo_children():
-        widget.destroy()
-
 # SIDEBAR
-sidebar_frame = CTkFrame(master=app, fg_color="#2A8C55",  width=176, height=700, corner_radius=0)
+sidebar_frame = CTkFrame(master=app, fg_color="#2A8C55", width=176, height=700, corner_radius=0)
 sidebar_frame.pack_propagate(0)
 sidebar_frame.pack(fill="y", anchor="w", side="left")
 
 # Logo
-logo_img_data = Image.open("logo.png")
+logo_img_data = Image.open(resource_path("logo.png"))
 logo_img = CTkImage(dark_image=logo_img_data, light_image=logo_img_data, size=(150, 150))
 CTkLabel(master=sidebar_frame, text="", image=logo_img).pack(pady=(38, 0), anchor="center")
 
-# Botones para cambiar de sección
-search_img_data = Image.open("search.png")
-like_img_data = Image.open("like.png")
-bug_img_data = Image.open("bug.png")
-bars_img_data = Image.open("bars.png")
-article_img_data = Image.open("article.png")
+# Cargar imágenes para los botones
+search_img_data = Image.open(resource_path("search.png"))
+like_img_data = Image.open(resource_path("like.png"))
+bug_img_data = Image.open(resource_path("bug.png"))
+bars_img_data = Image.open(resource_path("bars.png"))
+article_img_data = Image.open(resource_path("article.png"))
 
 search_img = CTkImage(dark_image=search_img_data, light_image=search_img_data)
 like_img = CTkImage(dark_image=like_img_data, light_image=like_img_data)
@@ -161,7 +177,7 @@ CTkButton(master=sidebar_frame, image=bars_img , text="Tendencias", fg_color="tr
 CTkButton(master=sidebar_frame, image=article_img , text="Resumen", fg_color="transparent", font=("Arial Bold", 14), hover_color="#207244", anchor="w", command=show_summarization).pack(anchor="center", ipady=5, pady=(16, 0), fill="x")
 
 # MAIN VIEW
-main_view = CTkFrame(master=app, fg_color="#fff",  width=924, height=700, corner_radius=0)
+main_view = CTkFrame(master=app, fg_color="#fff", width=924, height=700, corner_radius=0)
 main_view.pack_propagate(0)
 main_view.pack(side="left", fill="both", expand=True)
 

@@ -1,0 +1,24 @@
+# Excluir carpetas de PyInstaller
+build/
+dist/
+
+# Excluir archivos de configuración de PyInstaller
+*.spec
+
+# Excluir archivos temporales y caché
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Excluir archivos de logs
+*.log
+
+# Excluir entornos virtuales
+venv/
+.env/
+env/
+
+# Excluir archivos creados por editores de texto
+.vscode/
+.idea/
