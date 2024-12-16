@@ -9,8 +9,8 @@ def resource_path(relative_path):
         # PyInstaller crea una carpeta temporal para los archivos
         base_path = sys._MEIPASS
     except AttributeError:
-        # En modo desarrollo (sin empaquetar), usar el directorio actual
-        base_path = os.path.abspath("assets/images/")
+        # En modo desarrollo, la ruta es relativa al directorio raíz del proyecto
+        base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
     return os.path.join(base_path, relative_path)
 
