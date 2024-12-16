@@ -10,7 +10,7 @@ def resource_path(relative_path):
         base_path = sys._MEIPASS
     except AttributeError:
         # En modo desarrollo (sin empaquetar), usar el directorio actual
-        base_path = os.path.abspath(".")
+        base_path = os.path.abspath("assets/images/")
 
     return os.path.join(base_path, relative_path)
 
@@ -18,7 +18,7 @@ set_appearance_mode("light")
 app = CTk()
 
 # Configurar ícono
-icon_path = resource_path("logo.ico")
+icon_path = resource_path("assets/images/logo.ico")
 try:
     app.iconbitmap(icon_path)
 except Exception as e:
@@ -108,7 +108,7 @@ def show_social_trends():
     chart_frame = CTkFrame(master=main_view, fg_color="#F0F0F0", height=300)
     chart_frame.pack(fill="x", padx=20, pady=20)
     try:
-        chart_img_data = Image.open(resource_path("chart.png"))
+        chart_img_data = Image.open(resource_path("assets/images/chart.png"))
         chart_img = CTkImage(dark_image=chart_img_data, light_image=chart_img_data, size=(600,300))
         CTkLabel(master=chart_frame, text="", image=chart_img).pack(pady=10)
     except:
@@ -153,16 +153,16 @@ sidebar_frame.pack_propagate(0)
 sidebar_frame.pack(fill="y", anchor="w", side="left")
 
 # Logo
-logo_img_data = Image.open(resource_path("logo.png"))
+logo_img_data = Image.open(resource_path("assets/images/logo.png"))
 logo_img = CTkImage(dark_image=logo_img_data, light_image=logo_img_data, size=(150, 150))
 CTkLabel(master=sidebar_frame, text="", image=logo_img).pack(pady=(38, 0), anchor="center")
 
 # Cargar imágenes para los botones
-search_img_data = Image.open(resource_path("search.png"))
-like_img_data = Image.open(resource_path("like.png"))
-bug_img_data = Image.open(resource_path("bug.png"))
-bars_img_data = Image.open(resource_path("bars.png"))
-article_img_data = Image.open(resource_path("article.png"))
+search_img_data = Image.open(resource_path("assets/images/search.png"))
+like_img_data = Image.open(resource_path("assets/images/like.png"))
+bug_img_data = Image.open(resource_path("assets/images/bug.png"))
+bars_img_data = Image.open(resource_path("assets/images/bars.png"))
+article_img_data = Image.open(resource_path("assets/images/article.png"))
 
 search_img = CTkImage(dark_image=search_img_data, light_image=search_img_data)
 like_img = CTkImage(dark_image=like_img_data, light_image=like_img_data)
