@@ -1,3 +1,10 @@
+import os
+import pandas as pd
+import logging
+from sentence_transformers import SentenceTransformer, util
+import torch
+import numpy as np
+
 # ============================================
 # Función para Obtener Recomendaciones Basadas en Palabras Clave usando Sentence-BERT
 # ============================================
@@ -14,12 +21,6 @@ def get_recommendation(keywords_list, top_n=5):
         list: Lista de listas con las recomendaciones.
               Formato: [["15: Impacto de la Economía", "0.95"], ...]
     """
-    import os
-    import pandas as pd
-    import logging
-    from sentence_transformers import SentenceTransformer, util
-    import torch
-
     # ============================================
     # Configuración de Logging
     # ============================================
@@ -29,23 +30,48 @@ def get_recommendation(keywords_list, top_n=5):
     )
 
     # ============================================
-    # Cargar Modelo de Sentence-BERT
-    # ============================================
-    try:
-        model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')  # Modelo multilingüe eficiente
-    except Exception as e:
-        logging.error(f'Error al cargar el modelo de Sentence-BERT: {e}')
-        return [["Error al cargar el modelo de Sentence-BERT.", ""]]
-
-    # ============================================
     # Ruta al archivo CSV
     # ============================================
     script_dir = os.path.dirname(os.path.abspath(__file__))
     csv_file = os.path.join(script_dir, "../../data/raw_data_corpus.csv")
 
+    # ============================================
+    # Definir Rutas para Embeddings Únicos de Recomendación
+    # ============================================
+    embeddings_dir = os.path.join(script_dir, "../embeddings")
+    recommendation_embeddings_path = os.path.join(embeddings_dir, "recommendation_embeddings.npy")
+    recommendation_documents_path = os.path.join(embeddings_dir, "recommendation_documents.npy")
+    recommendation_titles_path = os.path.join(embeddings_dir, "recommendation_titles.npy")
+    recommendation_filas_path = os.path.join(embeddings_dir, "recommendation_filas.npy")
+    model_name = 'paraphrase-multilingual-MiniLM-L12-v2'  # Modelo multilingüe eficiente
+
+    # ============================================
+    # Crear el Directorio de Embeddings si no Existe
+    # ============================================
+    if not os.path.exists(embeddings_dir):
+        try:
+            os.makedirs(embeddings_dir)
+            logging.info(f"Directorio de embeddings creado en: {embeddings_dir}")
+        except Exception as e:
+            logging.error(f"Error al crear el directorio de embeddings: {e}")
+            return [["Error al crear el directorio de embeddings.", ""]]
+
+    # ============================================
+    # Cargar Modelo de Sentence-BERT
+    # ============================================
+    try:
+        model = SentenceTransformer(model_name)
+        logging.info(f"Modelo '{model_name}' cargado correctamente.")
+    except Exception as e:
+        logging.error(f'Error al cargar el modelo de Sentence-BERT: {e}')
+        return [["Error al cargar el modelo de Sentence-BERT.", ""]]
+
+    # ============================================
     # Leer el CSV
+    # ============================================
     try:
         df = pd.read_csv(csv_file, encoding='utf-8')
+        logging.info(f"Archivo CSV cargado correctamente desde: {csv_file}")
     except Exception as e:
         logging.error(f'Error al leer el archivo CSV: {e}')
         return [["Error al leer el archivo CSV.", ""]]
@@ -113,14 +139,41 @@ def get_recommendation(keywords_list, top_n=5):
         return [["No hay documentos válidos para procesar.", ""]]
 
     # ============================================
-    # Generar embeddings para los documentos válidos
+    # Cargar o Generar Embeddings para Recomendación
     # ============================================
-    logging.info("Generando embeddings para los documentos válidos del corpus...")
-    try:
-        embeddings_corpus = model.encode(valid_documentos, convert_to_tensor=True, show_progress_bar=True)
-    except Exception as e:
-        logging.error(f'Error al generar embeddings para el corpus: {e}')
-        return [["Error al generar embeddings para el corpus.", ""]]
+    if (os.path.exists(recommendation_embeddings_path) and 
+        os.path.exists(recommendation_documents_path) and
+        os.path.exists(recommendation_titles_path) and
+        os.path.exists(recommendation_filas_path)):
+        try:
+            embeddings_corpus = np.load(recommendation_embeddings_path)
+            valid_documentos = np.load(recommendation_documents_path, allow_pickle=True).tolist()
+            valid_titulos = np.load(recommendation_titles_path, allow_pickle=True).tolist()
+            valid_filas = np.load(recommendation_filas_path, allow_pickle=True).tolist()
+            logging.info("Embeddings de recomendación cargados desde archivos existentes.")
+        except Exception as e:
+            logging.error(f"Error al cargar los embeddings de recomendación: {e}")
+            return [["Error al cargar los embeddings de recomendación.", ""]]
+    else:
+        # Generar embeddings para los documentos válidos
+        logging.info("Generando embeddings para los documentos válidos del corpus...")
+        try:
+            embeddings_corpus = model.encode(valid_documentos, convert_to_tensor=False, show_progress_bar=True)
+            logging.info("Embeddings generados correctamente.")
+        except Exception as e:
+            logging.error(f'Error al generar embeddings para el corpus: {e}')
+            return [["Error al generar embeddings para el corpus.", ""]]
+        
+        # Guardar los Embeddings y Datos Válidos
+        try:
+            np.save(recommendation_embeddings_path, embeddings_corpus)
+            np.save(recommendation_documents_path, np.array(valid_documentos, dtype=object))
+            np.save(recommendation_titles_path, np.array(valid_titulos, dtype=object))
+            np.save(recommendation_filas_path, np.array(valid_filas, dtype=object))
+            logging.info(f"Embeddings de recomendación y datos guardados en: {recommendation_embeddings_path}, {recommendation_documents_path}, {recommendation_titles_path}, {recommendation_filas_path}")
+        except Exception as e:
+            logging.error(f"Error al guardar los embeddings de recomendación: {e}")
+            return [["Error al guardar los embeddings de recomendación.", ""]]
 
     # ============================================
     # Verificar si la lista de palabras clave está vacía
@@ -135,7 +188,8 @@ def get_recommendation(keywords_list, top_n=5):
     query = ' '.join(keywords_list)
     logging.info("Generando embedding para las palabras clave...")
     try:
-        embedding_query = model.encode(query, convert_to_tensor=True)
+        embedding_query = model.encode(query, convert_to_tensor=False)
+        logging.info("Embedding de palabras clave generado correctamente.")
     except Exception as e:
         logging.error(f'Error al generar embedding para las palabras clave: {e}')
         return [["Error al generar embedding para las palabras clave.", ""]]
@@ -146,6 +200,7 @@ def get_recommendation(keywords_list, top_n=5):
     logging.info("Calculando similitudes...")
     try:
         cos_scores = util.cos_sim(embedding_query, embeddings_corpus)[0]
+        logging.info("Similitudes calculadas correctamente.")
     except Exception as e:
         logging.error(f'Error al calcular similitudes: {e}')
         return [["Error al calcular similitudes.", ""]]
@@ -153,7 +208,11 @@ def get_recommendation(keywords_list, top_n=5):
     # ============================================
     # Obtener los índices de los documentos con mayor similitud
     # ============================================
-    top_results = torch.topk(cos_scores, k=top_n)
+    try:
+        top_results = torch.topk(cos_scores, k=top_n)
+    except Exception as e:
+        logging.error(f'Error al obtener los top {top_n} resultados: {e}')
+        return [["Error al obtener los top resultados.", ""]]
 
     # ============================================
     # Preparar las recomendaciones (sin encabezados)
