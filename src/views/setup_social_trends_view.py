@@ -22,43 +22,43 @@ def setup_social_trends_view(main_view):
     # Convertir los valores a float y ordenar por valor descendente
     for i in range(1, len(trends)):
         trends[i][1] = float(trends[i][1])
-
     trends[1:] = sorted(trends[1:], key=lambda x: x[1], reverse=True)
 
     # Crear tabla personalizada
     for i, row in enumerate(trends):
-        # Obtener la clasificación y color
         if i == 0:  # Encabezado
             row_frame = CTkFrame(master=table_frame, fg_color="#2A8C55", corner_radius=10)
             row_frame.pack(fill="x", padx=5, pady=5)
             CTkLabel(master=row_frame, text=row[0], font=("Arial Bold", 12), text_color="white", width=150, anchor="w").pack(side="left", padx=10)
-            CTkLabel(master=row_frame, text="Valor", font=("Arial Bold", 12), text_color="white", width=100, anchor="w").pack(side="left", padx=10)
-            CTkLabel(master=row_frame, text="Clasificación", font=("Arial Bold", 12), text_color="white", width=120, anchor="w").pack(side="left", padx=10)
+            CTkLabel(master=row_frame, text="Clasificación", font=("Arial Bold", 12), text_color="white", width=100, anchor="w").pack(side="right", padx=35)
+            CTkLabel(master=row_frame, text="Valor", font=("Arial Bold", 12), text_color="white", width=120, anchor="e").pack(side="right", padx=35)
         else:
             value = row[1]
             label, color = get_popularity_label_and_color(value)
+            normalized_value = value / 100.0
 
-            # Contenedor de la fila con color sólido
-            row_frame = CTkFrame(master=table_frame, fg_color=color, corner_radius=10)  # Color sin transparencia
+            # Contenedor de la fila
+            row_frame = CTkFrame(master=table_frame, fg_color=color, corner_radius=10) 
             row_frame.pack(fill="x", padx=5, pady=5)
 
-            # Primera columna: Nombre de la tendencia
-            CTkLabel(master=row_frame, text=row[0], font=("Arial", 12), anchor="w", width=150).pack(side="left", padx=5)
+            # Sub-frame para nombre y barra, organizados en vertical
+            info_frame = CTkFrame(master=row_frame, fg_color=color)
+            info_frame.pack(side="left", fill="x", expand=True, padx=5, pady=5)
+
+            # Nombre de la tendencia
+            CTkLabel(master=info_frame, text=row[0], font=("Arial", 12), anchor="w", width=150).pack(anchor="w", padx=5)
 
             # Borde blanco alrededor de la barra
-            border_frame = CTkFrame(master=row_frame, fg_color="white", corner_radius=10)
-            border_frame.pack(side="left", padx=5, pady=5, fill="x", expand=True)
-            
-            # Barra de progreso ajustada dentro del borde
-            normalized_value = value / 100.0
+            border_frame = CTkFrame(master=info_frame, fg_color="white", corner_radius=10)
+            border_frame.pack(anchor="w", padx=5, pady=5, fill="x")
+
+            # Barra de progreso debajo del nombre
             progress_bar = CTkProgressBar(master=border_frame, height=20, progress_color=color, corner_radius=10)
-            progress_bar.pack(fill="both", expand=True, padx=2, pady=2)
+            progress_bar.pack(fill="x", expand=True, padx=2, pady=2)
             progress_bar.set(normalized_value)
 
-            # Mostrar el valor numérico al lado
+            # Valor numérico y etiqueta a la derecha
             CTkLabel(master=row_frame, text=f"{value:.2f}", font=("Arial", 12), width=80, anchor="w").pack(side="left", padx=10)
-
-            # Mostrar la etiqueta descriptiva
             CTkLabel(master=row_frame, text=label, font=("Arial", 12), width=120, anchor="w").pack(side="left", padx=10)
 
 def get_popularity_label_and_color(value):
