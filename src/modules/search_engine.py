@@ -38,9 +38,12 @@ def get_search_results(input_text):
     
     # Generar embedding para el texto de entrada
     query_embedding = get_bert_embedding(text, tokenizer, model)
+    normalized_query = query_embedding / np.linalg.norm(query_embedding)
+    normalized_corpus = [doc / np.linalg.norm(doc) for doc in corpus_embeddings]
     
     # Calcular similitud coseno con los embeddings del corpus
-    similarities = [cosine_similarity(query_embedding, doc_emb)[0][0] for doc_emb in corpus_embeddings]
+    #similaritiesdotnorm = [np.dot(query_embedding, doc.T)[0][0] for doc in corpus_embeddings]
+    similarities = [cosine_similarity(normalized_query, doc_emb)[0][0] for doc_emb in normalized_corpus]
     
     # Ordenar los documentos por similitud descendente
     sorted_indices = sorted(range(len(similarities)), key=lambda i: similarities[i], reverse=True)
@@ -48,6 +51,7 @@ def get_search_results(input_text):
     # Formatear resultados
     results = [
         [titles[i], f"{similarities[i]:.4f}"] 
-        for i in sorted_indices[:3]  # Devolver solo los 3 mejores resultados
+        for i in sorted_indices[:20]  # Devolver los 20 mejores resultados
     ]
+    print(results)
     return results

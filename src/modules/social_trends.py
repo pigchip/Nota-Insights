@@ -11,10 +11,11 @@ from collections import defaultdict
 # Bibliotecas de Procesamiento de Lenguaje Natural
 import spacy
 from nltk.corpus import stopwords
+import nltk
 from gensim import corpora, models
 from gensim.models import CoherenceModel
 from gensim.models.phrases import Phrases, Phraser
-
+nltk.download('stopwords')
 # ============================================
 # 2. Configuración de Logging
 # ============================================

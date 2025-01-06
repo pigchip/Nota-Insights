@@ -11,6 +11,7 @@ if __name__ == "__main__":
     from views.table_view import setup_table_view
     from views.setup_plagiarism_view import setup_plagiarism_view
     from views.setup_social_trends_view import setup_social_trends_view
+    from views.summarization_view import summarization_view
 
     def resource_path(relative_path):
         """Obtiene la ruta absoluta del recurso, ya sea empaquetado o no."""
@@ -84,24 +85,8 @@ if __name__ == "__main__":
         setup_social_trends_view(main_view)
 
     def show_summarization():
-        clear_main_view()
-        CTkLabel(master=main_view, text="Resumen Automático", font=("Arial Black", 25), text_color="#2A8C55").pack(anchor="nw", padx=20, pady=20)
-
-        # Simular documentos disponibles
-        docs_frame = CTkFrame(master=main_view, fg_color="#F0F0F0")
-        docs_frame.pack(fill="x", padx=20, pady=10)
-
-        CTkLabel(master=docs_frame, text="Seleccione un documento:", font=("Arial",14)).pack(side="left", padx=10, pady=10)
-        combo = CTkComboBox(master=docs_frame, values=["Documento 1", "Documento 2", "Documento 3"], button_color="#2A8C55", border_color="#2A8C55")
-        combo.pack(side="left", padx=10, pady=10)
-
-        CTkButton(master=docs_frame, text="Generar Resumen", fg_color="#2A8C55", text_color="#fff").pack(side="left", padx=10)
-
-        # Mostrar el resumen generado
-        result_frame = CTkFrame(master=main_view, fg_color="#E6E6E6")
-        result_frame.pack(expand=True, fill="both", padx=20, pady=20)
-        CTkLabel(master=result_frame, text="Resumen:", font=("Arial Black", 15)).pack(anchor="w", padx=10, pady=(10,0))
-        CTkLabel(master=result_frame, text="Aquí se mostraría el resumen del documento seleccionado...", font=("Arial",14), text_color="#333", wraplength=600, justify="left").pack(anchor="w", padx=10, pady=10)
+        summarization_view(main_view)
+        
 
     # SIDEBAR
     sidebar_frame = CTkFrame(master=app, fg_color="#2A8C55", width=176, height=700, corner_radius=0)
