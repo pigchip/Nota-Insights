@@ -29,7 +29,6 @@ def setup_plagiarism_view(main_view,
         new_percentage = process_plagiarism(new_input)
 
         try:
-            # Eliminar '%' si está presente y convertir a float
             progress_value = float(new_percentage.strip('%')) / 100
         except ValueError:
             progress_value = 0.0  # Asumir 0% si no es válido

@@ -90,8 +90,7 @@ def get_recommendation(keywords_list, top_n=5):
     # ============================================
     # Obtener el índice original de los documentos en el CSV
     # ============================================
-    # Sumamos 2 al índice para considerar la fila de encabezados (fila 1) y 1-based indexing
-    filas = list(df.index + 2)  # Si el DataFrame index empieza en 0, fila CSV = index + 2
+    filas = list(df.index + 2)
 
     # ============================================
     # Determinar Documentos Válidos

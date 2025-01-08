@@ -144,8 +144,8 @@ def process_plagiarism(text_input):
     max_similarity = np.max(similarities)
     percentage = max_similarity * 100
     
-    # Opcional: Aplicar un umbral para considerar solo similitudes relevantes
-    threshold = 0.7  # Puedes ajustar este valor según tus necesidades
+    # Aplicar un umbral para considerar solo similitudes relevantes
+    threshold = 0.7  # Ajustar este valor según sea necesario
     if max_similarity < threshold:
         percentage = 0.0
     
